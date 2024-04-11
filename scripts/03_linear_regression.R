@@ -1,7 +1,6 @@
 library(tidyverse)
 library(ggcorrplot) #ggcorrplot function
 library(survey) #svydesign and svyglm functions
-library(jtools) #summ function
 library(MASS) #stepAIC function
 
 # reading in data and preparing dataframe for model
@@ -80,12 +79,12 @@ regsvy_sat<-svyglm(belief_mt ~
                        trust,
                    design=design_z)
 AIC(regsvy_sat) #AIC = 385.9 --> since publication, this code doesn't appear to be working anymore, because of an R update?
-summ(regsvy_sat, vifs=T)
+jtools::summ(regsvy_sat, vifs=T)
 
 # model selection
 ## backward selection
-fit_reg_backward<-stepAIC(regsvy_sat, direction="backward")
-summ(fit_reg_backward, digits=4, vifs=T)
+fit_reg_backward<-MASS::stepAIC(regsvy_sat, direction="backward")
+jtools::summ(fit_reg_backward, digits=4, vifs=T)
 AIC(fit_reg_backward)#377.4 --> since publication, this code doesn't appear to be working anymore, because of an R update?
 
 ## forward and iterative selection --> since publication, this code doesn't appear to be working anymore, because of an R update?
@@ -94,13 +93,13 @@ regsvy0<-svyglm(belief_mt ~ 1, data=dat_z3, design=design_z)
 AIC(regsvy0) #930.7
 
 ### forward selection, upper is saturated model, lower is null model
-fit_reg_forward<-stepAIC(regsvy0, direction="forward", scope=list(upper=regsvy_sat, lower=regsvy0))
+fit_reg_forward<-MASS::stepAIC(regsvy0, direction="forward", scope=list(upper=regsvy_sat, lower=regsvy0))
 summ(fit_reg_forward)
 AIC(fit_reg_forward) #377.2
 
 ### iterative selection, upper is saturated model, lower is null model
-fit_reg_both<-stepAIC(regsvy0, direction="both", scope=list(upper=regsvy_sat, lower=regsvy0))
-summ(fit_reg_both)
+fit_reg_both<-MASS::stepAIC(regsvy0, direction="both", scope=list(upper=regsvy_sat, lower=regsvy0))
+jtools::summ(fit_reg_both)
 AIC(fit_reg_both) #377.2
 
 ## how do models compare?
@@ -124,7 +123,7 @@ glm_svy<-svyglm(belief_mt ~
                     emotions+
                     trust,
                 design=design_z)
-summ(glm_svy, digits=4, vifs=T)
+jtools::summ(glm_svy, digits=4, vifs=T)
 AIC(glm_svy) #377.2 --> since publication, this code doesn't appear to be working anymore, because of an R update?
 
 # model diagnostics
